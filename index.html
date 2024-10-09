@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        .grid {
+            display: grid;
+            gap: 2px;
+            grid-template-columns: repeat(4, 1fr);
+        }
+        input {
+            margin-bottom: 16px;
+            width: 100%;
+            text-align: right;
+            padding: 10px;
+            font-size: 1.5rem;
+        }
+
+        button {
+            padding: 20px;
+            font-size: 1.5rem;
+        }
+
+    </style>
+</head>
+<body>
+    <input type="text" value="0" class="screen" disabled>
+    <div class="grid">
+        <button value="1">1</button>
+        <button value="2">2</button>
+        <button value="3">3</button>
+        <button value="+">+</button>
+        <button value="4">4</button>
+        <button value="5">5</button>
+        <button value="6">6</button>
+        <button value="-">-</button>
+        <button value="7">7</button>
+        <button value="8">8</button>
+        <button value="9">9</button>
+        <button value="x">x</button>
+        <button value="0">0</button>
+        <button value=".">.</button>
+        <button value="=">=</button>
+        <button value="/">/</button>
+        <button value="C">C</button>
+    </div>
+
+    <script>
+        let screen = document.querySelector('.screen');
+        let currentInput = '';
+        let previousInput = '';
+        let operator = null;
+
+        // Update layar kalkulator
+        function updateScreen() {
+            screen.value = currentInput || '0';
+        }
+
+        // Reset semua variabel
+        function clear() {
+            currentInput = '';
+            previousInput = '';
+            operator = null;
+            updateScreen();
+        }
+
+        // Hitung hasil dari operasi
+        function calculate() {
+            let result;
+            let prev = parseFloat(previousInput);
+            let current = parseFloat(currentInput);
+            
+            if (isNaN(prev) || isNaN(current)) return;
+
+            switch(operator) {
+                case '+':
+                    result = prev + current;
+                    break;
+                case '-':
+                    result = prev - current;
+                    break;
+                case 'x':
+                    result = prev * current;
+                    break;
+                case '/':
+                    result = prev / current;
+                    break;
+                default:
+                    return;
+            }
+
+            currentInput = result.toString();
+            operator = null;
+            previousInput = '';
+        }
+
+        // Tangani klik tombol
+        document.querySelectorAll("button").forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                let value = btn.value;
+
+                if (value === 'C') {
+                    clear();
+                    return;
+                }
+
+                if (value === '=') {
+                    calculate();
+                    updateScreen();
+                    return;
+                }
+
+                if (['+', '-', 'x', '/'].includes(value)) {
+                    if (currentInput === '') return;
+                    if (previousInput !== '') {
+                        calculate();
+                    }
+                    operator = value;
+                    previousInput = currentInput;
+                    currentInput = '';
+                    return;
+                }
+
+                if (value === '.' && currentInput.includes('.')) return;
+
+                currentInput += value;
+                updateScreen();
+            });
+        });
+
+        // Inisialisasi
+        clear();
+    </script>
+</body>
+</html>
